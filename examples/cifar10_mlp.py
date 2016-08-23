@@ -114,6 +114,7 @@ if not data_augmentation:
               validation_data=(X_test, Y_test),
               callbacks = [LearningRateScheduler(lr_schedule)],
               # callbacks = [EarlyStopping(monitor = 'val_loss', patience = 10)],
+              verbose = 2, 
               shuffle=True)
 else:
     print('Using real-time data augmentation.')
