@@ -82,7 +82,7 @@ model.add(Dense(2048, activity_regularizer = activity_l1l2(l1 = 0., l2 = 0.),
     W_regularizer = l2(l = 0.), b_regularizer = l2(l = 0.)))
 model.add(Activation('relu'))
 model.add(Dropout(0.2))
-model.add(Dense(10, activity_regularizer = activity_l1l2(l1 = 0., l2 = 0.),
+model.add(Dense(10, 
     W_regularizer = l2(l = 0.), b_regularizer = l2(l = 0.)))
 model.add(Activation('softmax'))
 
