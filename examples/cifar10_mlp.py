@@ -82,7 +82,7 @@ model.add(Dense(2048, activity_regularizer = activity_l1l2(l1 = 0., l2 = 0.),
     W_regularizer = l2(l = 0.), b_regularizer = l2(l = 0.)))
 model.add(Activation('relu'))
 model.add(Dropout(0.2))
-model.add(Dense(10, 
+model.add(Dense(10, activity_regularizer = activity_l1l2(l1 = 0., l2 = 0.),
     W_regularizer = l2(l = 0.), b_regularizer = l2(l = 0.)))
 model.add(Activation('softmax'))
 
@@ -114,7 +114,6 @@ if not data_augmentation:
               validation_data=(X_test, Y_test),
               callbacks = [LearningRateScheduler(lr_schedule)],
               # callbacks = [EarlyStopping(monitor = 'val_loss', patience = 10)],
-              verbose = 2, 
               shuffle=True)
 else:
     print('Using real-time data augmentation.')
@@ -159,3 +158,4 @@ np.savetxt("loss", loss, fmt = "%f")
 np.savetxt("val_loss", val_loss, fmt = "%f")
 np.savetxt("acc", acc, fmt = "%f")
 np.savetxt("val_acc", val_acc, fmt = "%f")
+model.save_weights("./weight/weight")
