@@ -53,7 +53,7 @@ class ActivityRegularizer(Regularizer):
     def __init__(self, l1=0., l2=0.):
         self.l1 = K.cast_to_floatx(l1)
         self.l2 = K.cast_to_floatx(l2)
-        self.ld = K.cast_to_floatx(0.01)
+        self.ld = K.cast_to_floatx(5.)
         self.uses_learning_phase = True
         self.batch_size = 32
 
@@ -68,6 +68,7 @@ class ActivityRegularizer(Regularizer):
         regularized_loss = loss
         for i in range(len(self.layer.inbound_nodes)):
             output = self.layer.get_output_at(i)
+            # output = T.printing.Print("output")(output)
             regularized_loss += self.l1 * K.sum(K.mean(K.abs(output), axis=0))
             regularized_loss += self.l2 * K.sum(K.mean(K.square(output), axis=0))
             
@@ -85,7 +86,7 @@ class ActivityRegularizer(Regularizer):
                 print "conv layer"
                 temp = T.mean(output, axis = -1)
                 mean_output = T.mean(temp, axis = -1)
-                mean_output = T.printing.Print("mean_output")(mean_output)
+                # mean_output = T.printing.Print("mean_output")(mean_output)
                 # temp = K.max(output, axis = -1)
                 # mean_output = K.max(temp, axis = -1)
                 # output = K.batch_flatten(output)
@@ -97,7 +98,8 @@ class ActivityRegularizer(Regularizer):
                 print "shape : ", mean_output.shape
                 
                 mean = K.mean(mean_output, axis = 0, keepdims = True)
-                std = K.std(mean_output, axis = 0, keepdims = True)
+                std = K.std(mean_output, axis = 0, keepdims = True) + K.cast_to_floatx(1e-8)
+                std = T.printing.Print("std: ")(std)
                 normalized_output = (mean_output - mean) / std
                 covariance = T.dot(T.transpose(normalized_output), normalized_output) / self.batch_size
                 # covariance = T.printing.Print("covariance: ")(covariance)
@@ -108,10 +110,11 @@ class ActivityRegularizer(Regularizer):
             else:
                 mean = K.mean(output, axis = 0, keepdims = True)
                 std = K.std(output, axis = 0, keepdims = True)
+                # std = T.printing.Print("std: ")(std)
                 normalized_output = (output - mean) / std
                 covariance = T.dot(T.transpose(normalized_output), normalized_output) / self.batch_size
                 mask = T.eye(col)
-                diversity_loss = K.sum(K.square(covariance - mask * covariance)) * self.ld / (col - 1)
+                diversity_loss = K.sum(K.square(covariance - mask * covariance)) * self.ld / (col - 1) / col
                 # diversity_loss = T.printing.Print("diversity")(diversity_loss)
                 regularized_loss += diversity_loss
             
